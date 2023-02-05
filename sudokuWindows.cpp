@@ -9,6 +9,9 @@ void solucionar();
 void proponer();
 void generar();
 void verificarFC(short F, short C);
+void obtenerBloque(short Ft, short Ct);
+void verificarBloque(short Ft, short Ct);
+void pasarBloque(short Ft, short Ct);
 bool completado();
 void show();
 
@@ -24,15 +27,22 @@ short tabla[9][9]={
 	{0,0,0,0,0,0,0,0,0},
 };
 
+short bloque[3][3]{
+	{0,0,0},
+	{0,0,0},
+	{0,0,0},
+};
+
 int main(){
 	short opc=0;
+	setlocale(LC_ALL, "");
 	system("cls");
-	cout<<"\n\n 		Sudoku";
+	cout<<"\n\n 		Sudoku(alpha version v0.0.1)";
 	cout<<"\n\n\n 1) Resolver     (Resolver sudoku por tu propia cuenta)";
-	cout<<"\n 2) Solucionar   (Se generar√° un sudoku y se resolver√° autom√°ticamente)";
-	cout<<"\n 3) Proponer     (Introducir el sudoku y resolverlo autom√°ticamente)";
+	cout<<"\n 2) Solucionar   (Se generar· un sudoku y se resolver· autom·ticamente) [No disponible]";
+	cout<<"\n 3) Proponer     (Introducir el sudoku y resolverlo autom·ticamente) [No disponible]";
 	cout<<"\n 4) Salir";
-	cout<<"\n\nOpci√≥n: ";
+	cout<<"\n\nOpciÛn: ";
 	cin>>opc;
 	switch(opc){
 		case 1:
@@ -47,8 +57,8 @@ int main(){
 		case 4:
 		break;
 		default:
-			system("echo Opci√≥n invalida...");
-			system("sleep 1");
+			system("echo OpciÛn invalida...");
+			system("TIMEOUT -T 1");
 			main();
 		break;
 	}
@@ -58,6 +68,8 @@ int main(){
 void resolver(){
 	short mov=0;
 	bool win;
+	system("cls");
+	cout<<"\n\n\n\n\n	Generando sudoku...";
 	generar();
 	do{
 		short ifi=0, icol=0, input=0;
@@ -71,7 +83,7 @@ void resolver(){
 		cin>>input;
 		ifi-=1; icol-=1;
 		if(input>9 or ifi>8 or icol>8){
-			system("echo Valor o valores incorrectos... && sleep 1");
+			system("echo Valor o valores incorrectos... && TIMEOUT -T 1");
 		}else{
 			tabla[ifi][icol] = input;
 			mov++;
@@ -80,6 +92,13 @@ void resolver(){
 					if(tabla[F][C] != 0){
 						verificarFC(F, C);
 					}
+				}
+			}
+			for(short Ft=0; Ft <= 6; Ft+=3){
+				for(short Ct=0; Ct <= 6; Ct+=3){
+					obtenerBloque(Ft, Ct);
+					verificarBloque(Ft, Ct);
+					pasarBloque(Ft, Ct);
 				}
 			}
 			win=completado();
@@ -108,14 +127,14 @@ void proponer(){
 		}
 	}
 	system("cls");
-	cout<<"El sudoku quedÛ de la siguiente forma: ";
+	cout<<"El sudoku quedo de la siguiente forma: ";
 	show();
 	short opc=0;
 	cout<<"øQue desea hacer?"<<endl;
 	cout<<"\n 1- Editar.";
 	cout<<"\n 2- Continuar.";
 	cout<<"\n 3- Cancelar.";
-	cout<<"\nOpcion: ";
+	cout<<"\nOpciÛn: ";
 	cin>>opc;
 	switch(opc){
 		case 1:
@@ -124,9 +143,9 @@ void proponer(){
 				system("cls");
 				short ifi=0, icol=0, input=0;
 				show();
-				cout<<"Ingrese la fila donde est· el error: ";
+				cout<<"Ingrese la fila donde esta el error: ";
 				cin>>ifi;
-				cout<<"Ingrese la columna donde est· el error: ";
+				cout<<"Ingrese la columna donde esta el error: ";
 				cin>>icol;
 				cout<<"Ingrese el valor correspondiente: ";
 				cin>>input;
@@ -144,8 +163,8 @@ void proponer(){
 		case 3:
 		break;
 		default:
-			system("echo Opci√≥n invalida...");
-			system("sleep 1"); //falta terminar <--------------------------
+			system("echo OpciÛn invalida...");
+			system("TIMEOUT -T 1"); //falta terminar <--------------------------
 		break;
 	}
 }
@@ -177,6 +196,13 @@ void generar(){
 			}
 		}
 		cont=0;
+		for(short Ft=0; Ft <= 6; Ft+=3){
+			for(short Ct=0; Ct <= 6; Ct+=3){
+				obtenerBloque(Ft, Ct);
+				verificarBloque(Ft, Ct);
+				pasarBloque(Ft, Ct);
+			}
+		}
 		for(short F=0; F<=8; F++){
 			for(short C=0; C<=8; C++){
 				if(tabla[F][C] != 0){
@@ -211,6 +237,47 @@ void verificarFC(short F, short C){
 	}
 }
 
+void obtenerBloque(short Ft, short Ct){
+	for(short Fb=0; Fb <= 2; Fb++){
+		for(short Cb=0; Cb <= 2; Cb++){
+			bloque[Fb][Cb]=tabla[Ft][Ct];
+			Ct+=1;
+		}
+		Ft+=1;
+		Ct-=3;
+	}
+}
+
+void verificarBloque(short Ft, short Ct){
+	for(short Fb=0; Fb<=2; Fb++){
+		for(short Cb=0; Cb<=2; Cb++){
+			short cont=0;
+		for(short F=0; F<=2; F++){
+			for(short C=0; C<=2; C++){
+				if(bloque[Fb][Cb]==bloque[F][C] and bloque[Fb][Cb]!=0){
+					cont++;
+				}
+				if(cont>=2){
+					bloque[F][C]=0;
+					cont=1; 
+				}
+				}
+			}
+		}
+	}
+}
+
+void pasarBloque(short Ft, short Ct){
+	for(short Fb=0; Fb<=2; Fb++){
+		for(short Cb=0; Cb<=2; Cb++){
+			tabla[Ft][Ct]=bloque[Fb][Cb];
+			Ct+=1;
+		}
+		Ft+=1;
+		Ct-=3;
+	}
+}
+
 bool completado(){
 	bool win=true;
 	for(short F=0; F <= 8; F++){
@@ -225,33 +292,20 @@ bool completado(){
 
 void show(){
 	cout<<"\n";
-	for(short subT=0; subT<3; subT++){
-		for(short F=0; F<3; F++){cout<<tabla[subT][F]<<" ";}cout<<"| ";
-		for(short F=3; F<6; F++){cout<<tabla[subT][F]<<" ";}cout<<"| ";
-		for(short F=6; F<9; F++){cout<<tabla[subT][F]<<" ";}cout<<"\n";
+	for(short subF=0; subF<3; subF++){
+		for(short C=0; C<3; C++){cout<<tabla[subF][C]<<" ";}cout<<"| ";
+		for(short C=3; C<6; C++){cout<<tabla[subF][C]<<" ";}cout<<"| ";
+		for(short C=6; C<9; C++){cout<<tabla[subF][C]<<" ";}cout<<"\n";
 	}cout<<"------+-------+------\n";
-	for(short subT=3; subT<6; subT++){
-		for(short F=0; F<3; F++){cout<<tabla[subT][F]<<" ";}cout<<"| ";
-		for(short F=3; F<6; F++){cout<<tabla[subT][F]<<" ";}cout<<"| ";
-		for(short F=6; F<9; F++){cout<<tabla[subT][F]<<" ";}cout<<"\n";
+	for(short subF=3; subF<6; subF++){
+		for(short C=0; C<3; C++){cout<<tabla[subF][C]<<" ";}cout<<"| ";
+		for(short C=3; C<6; C++){cout<<tabla[subF][C]<<" ";}cout<<"| ";
+		for(short C=6; C<9; C++){cout<<tabla[subF][C]<<" ";}cout<<"\n";
 	}cout<<"------+-------+------\n";
-	for(short subT=6; subT<9; subT++){
-		for(short F=0; F<3; F++){cout<<tabla[subT][F]<<" ";}cout<<"| ";
-		for(short F=3; F<6; F++){cout<<tabla[subT][F]<<" ";}cout<<"| ";
-		for(short F=6; F<9; F++){cout<<tabla[subT][F]<<" ";}cout<<"\n";
+	for(short subF=6; subF<9; subF++){
+		for(short C=0; C<3; C++){cout<<tabla[subF][C]<<" ";}cout<<"| ";
+		for(short C=3; C<6; C++){cout<<tabla[subF][C]<<" ";}cout<<"| ";
+		for(short C=6; C<9; C++){cout<<tabla[subF][C]<<" ";}cout<<"\n";
 	}
 }
 
-/*
-short tabla[9][9]={
-	{5,3,4,6,7,8,9,1,2},
-	{6,7,2,1,9,5,3,4,8},
-	{1,9,8,3,4,2,5,6,7},
-	{8,5,9,7,6,1,4,2,3},
-	{4,2,6,8,5,3,7,9,1},
-	{7,1,3,9,2,4,8,5,6},
-	{9,6,1,5,3,7,2,8,4},
-	{2,8,7,4,1,9,6,3,5},
-	{3,4,5,2,8,6,1,7,9},
-}; 
-*/
